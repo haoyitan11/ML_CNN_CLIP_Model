@@ -1,0 +1,12 @@
+# ---- Python cache ----
+__pycache__/
+*.pyc
+
+# ---- Model checkpoints / weights (big) ----
+**/outputs/
+**/checkpoints/
+*.pt
+*.pth
+
+# ---- Exported / huge image folders ----
+**/images/

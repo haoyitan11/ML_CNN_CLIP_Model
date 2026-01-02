@@ -1,0 +1,169 @@
+{
+  "images": [
+    {
+      "name": "image1",
+      "file": "image1.png",
+      "questions": [
+        "Is this a chest x-ray?",
+        "What imaging modality is this?",
+        "Is this a PA view?",
+        "What organ is shown?",
+        "Are the lungs visible?",
+        "Is there pneumonia?",
+        "Is there pleural effusion?",
+        "Is there a mass?",
+        "Is there pneumothorax?",
+        "Is there cardiomegaly?",
+        "Is the abnormality on the right side?",
+        "Is the abnormality on the left side?"
+      ]
+    },
+    {
+      "name": "image2",
+      "file": "image2.png",
+      "questions": [
+        "What imaging modality is this?",
+        "Is this an MRI?",
+        "What MRI sequence is shown?",
+        "What plane is this image?",
+        "What organ is shown?",
+        "Which structure is visible?",
+        "Are the lateral ventricles visible?",
+        "Is the cerebellum shown?",
+        "Is there hemorrhage?",
+        "Is there infarct?",
+        "Is there a mass?",
+        "Is there edema?"
+      ]
+    },
+    {
+      "name": "image3",
+      "file": "image3.png",
+      "questions": [
+        "What imaging modality is this?",
+        "Is this an MRI?",
+        "What plane is this image?",
+        "What organ is shown?",
+        "Is this diffusion weighted imaging (DWI)?",
+        "Is there infarct?",
+        "Is there acute stroke?",
+        "Is there hemorrhage?",
+        "Is there edema?",
+        "Is there a mass?",
+        "What sequence is shown?"
+      ]
+    },
+    {
+      "name": "image4",
+      "file": "image4.png",
+      "questions": [
+        "What imaging modality is this?",
+        "Is this an MRI?",
+        "What MRI sequence is shown?",
+        "What plane is this image?",
+        "What organ is shown?",
+        "Is white matter visible?",
+        "Is gray matter visible?",
+        "Is there a mass?",
+        "Is there hemorrhage?",
+        "Is there infarct?"
+      ]
+    },
+    {
+      "name": "image5",
+      "file": "image5.png",
+      "questions": [
+        "What imaging modality is this?",
+        "Is this a CT scan?",
+        "What plane is this image?",
+        "What organ is shown?",
+        "Is there hemorrhage?",
+        "Is there a subdural hematoma?",
+        "Is there an epidural hematoma?",
+        "Is there subarachnoid hemorrhage?",
+        "Is there infarct?",
+        "Is there acute stroke?",
+        "Is the abnormality on the right side?",
+        "Is the abnormality on the left side?"
+      ]
+    },
+    {
+      "name": "image6",
+      "file": "image6.png",
+      "questions": [
+        "What imaging modality is this?",
+        "Is this a chest x-ray?",
+        "What view is this (PA or AP)?",
+        "What organ is shown?",
+        "Is there pleural effusion?",
+        "Is there pneumonia?",
+        "Is there a mass?",
+        "Is there pneumothorax?",
+        "Is the abnormality on the left side?",
+        "Is the abnormality on the right side?"
+      ]
+    },
+    {
+      "name": "image7",
+      "file": "image7.png",
+      "questions": [
+        "What imaging modality is this?",
+        "Is this an MRI?",
+        "What plane is this image?",
+        "What organ is shown?",
+        "Is this diffusion weighted imaging (DWI)?",
+        "Is this an ADC map?",
+        "Is there infarct?",
+        "Is there acute stroke?",
+        "Is there hemorrhage?",
+        "Is there a mass?"
+      ]
+    },
+    {
+      "name": "image8",
+      "file": "image8.png",
+      "questions": [
+        "What imaging modality is this?",
+        "Is this a CT scan?",
+        "What plane is this image?",
+        "What body region is shown?",
+        "What organ is shown?",
+        "Is this a contrast CT?",
+        "Is there ascites?",
+        "Is there a mass?",
+        "Is there calcification?"
+      ]
+    },
+    {
+      "name": "image9",
+      "file": "image9.png",
+      "questions": [
+        "What imaging modality is this?",
+        "Is this an MRI?",
+        "What plane is this image?",
+        "What organ is shown?",
+        "Is this with contrast?",
+        "Was gadolinium used?",
+        "Is the suprasellar region visible?",
+        "Are the thalami visible?",
+        "Is there a mass?",
+        "Is there hemorrhage?"
+      ]
+    },
+    {
+      "name": "image10",
+      "file": "image10.png",
+      "questions": [
+        "What imaging modality is this?",
+        "Is this a CT scan?",
+        "What plane is this image?",
+        "What body region is shown?",
+        "What organ is visible?",
+        "Is this with contrast?",
+        "Is there a mass?",
+        "Is there ascites?",
+        "Is there calcification?"
+      ]
+    }
+  ]
+}
