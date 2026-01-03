@@ -9,10 +9,10 @@ SRC = os.path.join(ROOT, "src")
 if SRC not in sys.path:
     sys.path.insert(0, SRC)
 
-from src.medvqa_clip.utils.runtime import get_device
-from src.medvqa_clip.utils.io import read_json
-from src.medvqa_clip.models.multitask_clip import MultiTaskCLIP
-from src.medvqa_clip.models.hybrid_answerer import HybridAnswerer
+from medvqa_clip.utils.runtime import get_device
+from medvqa_clip.utils.io import read_json
+from medvqa_clip.models.multitask_clip import MultiTaskCLIP
+from medvqa_clip.models.hybrid_answerer import HybridAnswerer
 
 
 def load_checkpoint_safely(model: torch.nn.Module, ckpt_path: str, device: str) -> bool:
