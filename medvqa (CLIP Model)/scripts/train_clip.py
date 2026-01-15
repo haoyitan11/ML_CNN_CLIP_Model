@@ -7,12 +7,12 @@ if SRC not in sys.path:
 import argparse, os
 import torch
 
-from src.medvqa_clip.utils.seed import set_seed
-from src.medvqa_clip.utils.runtime import get_device, prepare_loaders
-from src.medvqa_clip.utils.io import read_json
-from src.medvqa_clip.utils.logging import log_line
-from src.medvqa_clip.engine.train import train
-from src.medvqa_clip.models.multitask_clip import MultiTaskCLIP
+from medvqa_clip.utils.seed import set_seed
+from medvqa_clip.utils.runtime import get_device, prepare_loaders
+from medvqa_clip.utils.io import read_json
+from medvqa_clip.utils.logging import log_line
+from medvqa_clip.engine.train import train
+from medvqa_clip.models.multitask_clip import MultiTaskCLIP
 
 def main():
     #Parse command-line arguments
@@ -87,17 +87,18 @@ def main():
 
     #train loop
     best_path = train(
-        model=model,
-        train_loader=train_loader,
-        val_loader=val_loader,
-        optimizer=optimizer,
-        device=device,
-        epochs=args.epochs,
-        exp_dir=args.exp_dir,
-        logger=log_line,
-        config=vars(args),
+    model=model,
+    train_loader=train_loader,
+    val_loader=val_loader,
+    optimizer=optimizer,
+    device=device,
+    epochs=args.epochs,
+    exp_dir=args.exp_dir,
+    logger=log_line,
+    config=vars(args),
+    vocabs=vocabs,   
     )
-    
+
     #log message
     log_line(args.exp_dir, f"Training done. Best checkpoint: {best_path}")
 

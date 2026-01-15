@@ -7,10 +7,10 @@ if SRC not in sys.path:
 import argparse, os, json
 import torch
 
-from src.medvqa_clip.utils.io import read_json, write_json
-from src.medvqa_clip.utils.runtime import get_device, prepare_test_loader
-from src.medvqa_clip.models.multitask_clip import MultiTaskCLIP
-from src.medvqa_clip.engine.evaluate import evaluate
+from medvqa_clip.utils.io import read_json, write_json
+from medvqa_clip.utils.runtime import get_device, prepare_test_loader
+from medvqa_clip.models.multitask_clip import MultiTaskCLIP
+from medvqa_clip.engine.evaluate import evaluate
 
 def main():
     #parse command-line argument

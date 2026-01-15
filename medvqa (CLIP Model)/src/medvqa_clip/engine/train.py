@@ -6,126 +6,103 @@ from collections import defaultdict
 from medvqa_clip.engine.evaluate import evaluate
 from medvqa_clip.utils.io import write_json
 
-#Train loop for multitaskCLIP
-def train(model, train_loader, val_loader, optimizer, device, epochs, exp_dir, logger, config=None):
-    #ensure checkpoint exists
+def train(model, train_loader, val_loader, optimizer, device, epochs, exp_dir, logger, config=None, vocabs=None):
     os.makedirs(os.path.join(exp_dir, "checkpoints"), exist_ok=True)
-    
-    #Save training configuration
+
     if config is not None:
         write_json(config, os.path.join(exp_dir, "config.json"))
 
-    #Store epoch-by-epoch results
     history = []
     history_path = os.path.join(exp_dir, "history.json")
 
-    #track best validation accuracy so far
     best = -1.0
     best_path = os.path.join(exp_dir, "checkpoints", "best.pt")
     last_path = os.path.join(exp_dir, "checkpoints", "last.pt")
 
-    # Equal weight for all tasks by default
-    ce = torch.nn.CrossEntropyLoss()
+    loss_fn = torch.nn.CrossEntropyLoss()
 
-    #Epoch loop
-    for epoch in range(1, epochs+1):
-        #Switch model to training mode
+    for epoch in range(1, epochs + 1):
         model.train()
-        
-        #Progress bar
         pbar = tqdm(train_loader, desc=f"Epoch {epoch}/{epochs} [train]", leave=True)
-        
-        #Running sums for loss and accuracy over the epoch
-        running_loss = 0.0
-        running_correct = 0
-        running_total = 0
 
-        #Batch loop
+        loss_sum = 0.0
+        correct_sum = 0
+        n_sum = 0
+
         for batch in pbar:
-            #Move image tensor
             pixel_values = batch["pixel_values"].to(device)
-            
-            #Move tokenized question to device
             input_ids = batch["input_ids"].to(device)
-            
-            #Attention mask might be missing depending on processor settings
             attn = batch.get("attention_mask", None)
             if attn is not None:
                 attn = attn.to(device)
-                
-            #Tasks name for each sample in the batch
+
             tasks = batch["tasks"]
-            
-            #Ground-truth label for each sample
             y = batch["labels"].to(device)
 
-            #Reset gradients 
             optimizer.zero_grad(set_to_none=True)
 
-            #Extract shared fused features from CLIP
             feats = model.forward_features(pixel_values, input_ids, attn)
 
-            # group indices per task
             task_to_idx = defaultdict(list)
             for i, t in enumerate(tasks):
-                task_to_idx[t].append(i)
+                task_to_idx[str(t)].append(i)
 
-            #Total loss across all tasks present in the batch
-            loss = 0.0
-            
-            #Store predictions for the whole batch
             pred = torch.empty_like(y)
-            
-            #for each group, compute logits + loss
-            for t, idxs in task_to_idx.items():
-                #convert indices to a tensor
-                idx = torch.tensor(idxs, device=device)
-                
-                #Forward only subset of features
-                logits = model.forward_task(t, feats.index_select(0, idx))
-                
-                #Add cross-entropy loss for this task subset
-                loss = loss + ce(logits, y.index_select(0, idx))
-                
-                #predicted class ID
-                pred.index_copy_(0, idx, logits.argmax(dim=-1))
+            bs = y.size(0)
+            batch_loss_sum = 0.0
 
-            #Backprop + update weights
+            for t, idxs in task_to_idx.items():
+                idx = torch.tensor(idxs, device=device)
+                logits = model.forward_task(t, feats.index_select(0, idx))
+                y_t = y.index_select(0, idx)
+
+                pred.index_copy_(0, idx, logits.argmax(dim=-1))
+                batch_loss_sum = batch_loss_sum + (loss_fn(logits, y_t) * idx.numel())
+
+            loss = batch_loss_sum / max(1, bs)
             loss.backward()
             optimizer.step()
 
-            #update running stats
-            running_loss += loss.item() * y.size(0)
-            running_correct += (pred == y).sum().item()
-            running_total += y.size(0)
+            ok = (pred == y)
+            loss_sum += float(loss.item() * bs)
+            correct_sum += int(ok.sum().item())
+            n_sum += int(bs)
 
-            #update progress bar text
-            pbar.set_postfix(loss=running_loss/max(1,running_total), acc=running_correct/max(1,running_total))
+            pbar.set_postfix(loss=loss_sum/max(1,n_sum), em=correct_sum/max(1,n_sum))
 
-        #Compute epoch-level training metrics
-        train_loss = running_loss/max(1,running_total)
-        train_acc = running_correct/max(1,running_total)
+        train_loss = loss_sum / max(1, n_sum)
 
-        #Validation
-        val_metrics = evaluate(model, val_loader, device, show_progress=False)
-        val_acc = val_metrics["overall"]["acc"]
+        # Compute train/val EM+F1 using evaluator
+        train_metrics = evaluate(model, train_loader, device, vocabs=vocabs, show_progress=False, loss_fn=loss_fn)
+        val_metrics   = evaluate(model, val_loader, device, vocabs=vocabs, show_progress=False, loss_fn=loss_fn)
 
-        #Save epoch result to history
-        entry = {"epoch": epoch, "train_loss": train_loss, "train_acc": train_acc, "val": val_metrics}
+        entry = {
+            "epoch": epoch,
+            "train_loss": train_loss,
+            "train_em": train_metrics["overall"]["em"],
+            "train_f1": train_metrics["overall"]["f1"],
+            "val_loss": val_metrics["overall"]["loss"],
+            "val_em": val_metrics["overall"]["em"],
+            "val_f1": val_metrics["overall"]["f1"],
+            "train": train_metrics,
+            "val": val_metrics,
+        }
         history.append(entry)
-        
-        #Persist history to disk every epoch
         write_json(history, history_path)
 
-        logger(exp_dir, f"Epoch {epoch}: train_loss={train_loss:.4f} train_acc={train_acc:.4f} | val_acc={val_acc:.4f}")
+        logger(
+            exp_dir,
+            f"Epoch {epoch}: "
+            f"train_loss={entry['train_loss']:.4f} train_em={entry['train_em']:.4f} train_f1={entry['train_f1']:.4f} | "
+            f"val_loss={entry['val_loss']:.4f} val_em={entry['val_em']:.4f} val_f1={entry['val_f1']:.4f}"
+        )
 
-        #Save BEST checkpoint
-        if val_acc > best:
-            best = val_acc
+        # Choose best checkpoint by F1 (recommended) OR EM
+        if entry["val_f1"] > best:
+            best = entry["val_f1"]
             torch.save(model.state_dict(), best_path)
-            logger(exp_dir, f"Saved BEST to {best_path} (best_val_acc={best:.4f})")
+            logger(exp_dir, f"Saved BEST to {best_path} (best_val_f1={best:.4f})")
 
-        #Save LAST checkpoint every epoch
         torch.save(model.state_dict(), last_path)
 
     return best_path

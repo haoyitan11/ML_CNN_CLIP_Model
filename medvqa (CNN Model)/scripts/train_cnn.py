@@ -111,19 +111,24 @@ def main():
     if sampler_info is not None:
         log_line(args.exp_dir, f"Balanced closed sampler enabled: counts={sampler_info}")
 
+    other_open_id = vocab["stoi"].get("OTHER", None)
+    
     #run training
     best_path = train(
-        model=model,
-        train_loader=train_loader,
-        val_loader=val_loader,
-        optimizer=optimizer,
-        device=device,
-        epochs=args.epochs,
-        exp_dir=args.exp_dir,
-        logger=log_line,
-        config=config,
-        alpha_closed=args.alpha_closed,
+    model=model,
+    train_loader=train_loader,
+    val_loader=val_loader,
+    optimizer=optimizer,
+    device=device,
+    epochs=args.epochs,
+    exp_dir=args.exp_dir,
+    logger=log_line,
+    config=config,
+    alpha_closed=args.alpha_closed,
+    ignore_open_other=True,
+    other_open_id=other_open_id,
     )
+    
     log_line(args.exp_dir, f"Training done. Best checkpoint: {best_path}")
 
 if __name__ == "__main__":

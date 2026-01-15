@@ -14,10 +14,13 @@ python scripts\export_images.py --dataset_name flaviagiammarino/vqa-rad --out_di
 python scripts\build_vocab.py --out_path outputs\vocabs.json
 
 4. Train the CILP model
-python scripts\train_clip.py --dataset_name flaviagiammarino/vqa-rad --vocab_bundle outputs\vocabs.json --exp_dir outputs\exp_clip --epochs 4
+python scripts\train_clip.py --dataset_name flaviagiammarino/vqa-rad --vocab_bundle outputs\vocabs.json --exp_dir outputs\exp_clip --epochs 40
 	
 5. Evaluate the CILP model
 python scripts\eval_clip.py --dataset_name flaviagiammarino/vqa-rad --vocab_bundle outputs\vocabs.json --ckpt_path outputs\exp_clip\checkpoints\best.pt --exp_dir outputs\exp_clip
 
 6. Run the Gradio Client
-python scripts\app_gradio.py --vocab_bundle outputs\vocabs.json --ckpt_path outputs\exp_clip\checkpoints\best.pt
+python scripts/app_gradio.py --mode app --ckpt_path outputs/exp_clip/checkpoints/best.pt
+
+7.train_loss, train_accuracy
+python scripts\loss_accuracy.py

@@ -1,4 +1,4 @@
-from _setup_path import *  # noqa: F401,F403
+from _setup_path import * 
 
 import os
 import json
@@ -9,7 +9,7 @@ import torch
 from medvqa.utils.io import read_json, write_json
 from medvqa.utils.runtime import get_device, prepare_test_loader
 from medvqa.models.cnn_vqa import CNNVQAModel
-from medvqa.engine.evaluate import evaluate_two_head
+from medvqa.engine.evaluate import evaluate_two_head_emf1
 
 @torch.no_grad()
 def save_predictions(model, loader, device, out_csv: str):
@@ -114,7 +114,14 @@ def main():
     model.load_state_dict(state_dict)
 
     #Evalaute on the test set
-    metrics = evaluate_two_head(model, test_loader, device, topk=5, show_progress=True)
+    other_open_id = vocab["stoi"].get("OTHER", None)
+
+    metrics = evaluate_two_head_emf1(
+    model, test_loader, device,
+    show_progress=True,
+    ignore_open_other=True,
+    other_open_id=other_open_id,
+    )
 
     #ensure directory exists
     os.makedirs(args.exp_dir, exist_ok=True)
